@@ -15,7 +15,7 @@ UGA_Role_LightAttack::UGA_Role_LightAttack()
 	//CancelAbilitiesWithTag.AddTag(WuwaGameplayTags::Player_Ability_Attack_Light);
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
-	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalOnly;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 }
 
 void UGA_Role_LightAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -52,7 +52,7 @@ void UGA_Role_LightAttack::PlayComboMontage()
 
 	if (AWuwaPlayerCharater* Character = Cast<AWuwaPlayerCharater>(GetAvatarActorFromActorInfo()))
 	{
-		if (Character->HasAuthority()) // 只在服务端调用Multicast
+		if (Character->HasAuthority()) // 只锟节凤拷锟斤拷说锟斤拷锟組ulticast
 		{
 			MulticastPlayMontage(MontageToPlay);
 		}
@@ -64,7 +64,6 @@ void UGA_Role_LightAttack::PlayComboMontage()
 void UGA_Role_LightAttack::ResetCombo_Implementation()
 {
 
-	// 客户端请求服务端重置
 	ServerResetCombo();
 
 }
@@ -177,10 +176,9 @@ void UGA_Role_LightAttack::OnInputPressed()
 
 void UGA_Role_LightAttack::Server_OnInputPressed_Implementation()
 {
-	// 服务器端执行连击逻辑
 	//if (bComboInputAllowed)
 	{
-		TryContinueCombo(); // 服务器播放下一次蒙太奇
+		TryContinueCombo(); 
 	}
 }
 

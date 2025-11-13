@@ -76,7 +76,7 @@ public:
 	void PlayAnimMontage(UAnimMontage* MontageToPlay);
 	
 	UPROPERTY(Replicated)
-	bool bComboInputAllowed = true;   // 是否允许提前输入
+	bool bComboInputAllowed = true;   
 
 	UFUNCTION()
 	bool Server_OnInputPressed_Validate();
@@ -92,6 +92,6 @@ public:
 		FGameplayTagContainer* OptionalRelevantTags) const override;
 private:
 	UPROPERTY(Replicated)
-	bool bComboQueued = false;         // 是否已提前按下
+	bool bComboQueued = false;         // 锟角凤拷锟斤拷锟斤拷前锟斤拷锟斤拷
 	
 };
