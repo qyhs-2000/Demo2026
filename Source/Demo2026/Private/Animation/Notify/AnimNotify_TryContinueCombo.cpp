@@ -7,7 +7,7 @@
 #include "Gameplay/Role/Attack/GA_Role_LightAttack.h"
 void UAnimNotify_TryContinueCombo::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	if (AWuwaBaseCharater* OwnerCharacter = Cast<AWuwaBaseCharater>(MeshComp->GetOwner()))
+	if (AWuwaBaseCharacter* OwnerCharacter = Cast<AWuwaBaseCharacter>(MeshComp->GetOwner()))
 	{
 		if (UWuwaAbilitySystemComponent* ASC = OwnerCharacter->GetWuwaAbilitySystemComponent())
 		{

@@ -6,5 +6,10 @@
 
 AWuwaPlayerController::AWuwaPlayerController()
 {
-	
+	PlayerTeamID = FGenericTeamId(0);
+}
+
+FGenericTeamId AWuwaPlayerController::GetGenericTeamId() const
+{
+	return PlayerTeamID;
 }

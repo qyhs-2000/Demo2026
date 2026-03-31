@@ -5,9 +5,11 @@
 #include "Character/WuwaBaseCharater.h"
 #include "AbilitySystem/WuwaAbilitySystemComponent.h"
 #include "Gameplay/Role/Attack/GA_Role_LightAttack.h"
+#include "Gameplay/Role/GA_Role_Dodge.h"
+
 void UAnimNotify_CanInterrupt::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
-	if (AWuwaBaseCharater* OwnerCharacter = Cast<AWuwaBaseCharater>(MeshComp->GetOwner()))
+	if (AWuwaBaseCharacter* OwnerCharacter = Cast<AWuwaBaseCharacter>(MeshComp->GetOwner()))
 	{
 		if (UWuwaAbilitySystemComponent* ASC = OwnerCharacter->GetWuwaAbilitySystemComponent())
 		{
@@ -18,6 +20,13 @@ void UAnimNotify_CanInterrupt::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 					if (Ability->IsActive())
 					{
 						Ability->SetCanBeInterrupted(true);
+					}
+				}
+				if (UGA_Role_Dodge* Ability = Cast<UGA_Role_Dodge>(Spec.GetPrimaryInstance()))
+				{
+					if (Ability->IsActive())
+					{
+						Ability->CancelDodge();
 					}
 				}
 			}

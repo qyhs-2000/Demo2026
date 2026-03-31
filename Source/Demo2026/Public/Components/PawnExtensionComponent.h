@@ -20,6 +20,18 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	template<typename T>
+	T* GetOwningPawn()
+	{
+		static_assert(TPointerIsConvertibleFromTo<T, APawn>::Value, "'T' Template paramter must be derived from APawn");
+		return CastChecked<T>(GetOwner());
+	}
+
+	APawn* GetOwningPawn()
+	{
+		return GetOwningPawn<APawn>();
+	}
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

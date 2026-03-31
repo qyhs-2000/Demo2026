@@ -16,7 +16,8 @@ public class Demo2026 : ModuleRules
 			"EnhancedInput",
             "GameplayTags",
             "AnimGraphRuntime",
-            "GameplayTasks"
+            "GameplayTasks",
+            "GameplayAbilities"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });

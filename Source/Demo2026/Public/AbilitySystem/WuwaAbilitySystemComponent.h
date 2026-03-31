@@ -16,4 +16,6 @@ class DEMO2026_API UWuwaAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	void OnAbilityInputPressed(FGameplayTag InputTag);
 	void OnAbilityInputReleased(FGameplayTag InputTag);
+
+	bool TryActivateAbilityByTag(FGameplayTag InTagToActivate);
 };

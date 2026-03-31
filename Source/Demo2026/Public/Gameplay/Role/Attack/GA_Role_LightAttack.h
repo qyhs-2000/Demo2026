@@ -74,6 +74,7 @@ public:
 	void MulticastPlayMontage(UAnimMontage* MontageToPlay);
 
 	void PlayAnimMontage(UAnimMontage* MontageToPlay);
+	void ResetAttack();
 	
 	UPROPERTY(Replicated)
 	bool bComboInputAllowed = true;   
@@ -90,6 +91,14 @@ public:
 		const FGameplayTagContainer* SourceTags,
 		const FGameplayTagContainer* TargetTags,
 		FGameplayTagContainer* OptionalRelevantTags) const override;
+
+	UFUNCTION()
+	void HandleDamage(FGameplayEventData EventData);
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> GE_DealDamage_Class;
+
+	void UpdateRotationToInput();
 private:
 	UPROPERTY(Replicated)
 	bool bComboQueued = false;         // �Ƿ�����ǰ����

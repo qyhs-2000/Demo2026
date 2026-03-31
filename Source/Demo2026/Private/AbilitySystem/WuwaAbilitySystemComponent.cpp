@@ -15,9 +15,9 @@ void UWuwaAbilitySystemComponent::OnAbilityInputPressed(FGameplayTag InputTag)
 	{
 		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) continue;
 
-		if (AbilitySpec.IsActive())
+		if (InputTag.MatchesTag(WuwaGameplayTags::InputTag_Toggleable) && AbilitySpec.IsActive())
 		{
-			
+			CancelAbilityHandle(AbilitySpec.Handle);
 		}
 		// first activate
 		else
@@ -37,4 +37,23 @@ void UWuwaAbilitySystemComponent::OnAbilityInputPressed(FGameplayTag InputTag)
 
 void UWuwaAbilitySystemComponent::OnAbilityInputReleased(FGameplayTag InputTag)
 {
+}
+
+bool UWuwaAbilitySystemComponent::TryActivateAbilityByTag(FGameplayTag InTagToActivate)
+{
+	check(InTagToActivate.IsValid());
+	TArray<FGameplayAbilitySpec*> AbilitySpecs;
+	GetActivatableGameplayAbilitySpecsByAllMatchingTags(InTagToActivate.GetSingleTagContainer(), AbilitySpecs);
+	if (!AbilitySpecs.IsEmpty())
+	{
+		const int RandomIndex = FMath::RandRange(0, AbilitySpecs.Num() - 1);
+		FGameplayAbilitySpec* AbilitySpecToActivate = AbilitySpecs[RandomIndex];
+		check(AbilitySpecToActivate);
+
+		if (!AbilitySpecToActivate->IsActive())
+		{
+			return TryActivateAbility(AbilitySpecToActivate->Handle);
+		}
+	}
+	return false;
 }

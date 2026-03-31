@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "WarriorGameplayTags.h"
 #include "WuwaBaseAnimInstance.generated.h"
 
 /**
@@ -13,5 +14,7 @@ UCLASS()
 class DEMO2026_API UWuwaBaseAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-	
+public:
+	UFUNCTION(BlueprintPure, meta = (BlueprintThreadSafe))
+	bool DoesOwnerHaveTag(FGameplayTag Tag);
 };

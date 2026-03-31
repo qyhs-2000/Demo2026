@@ -12,7 +12,7 @@ void UAnimNotify_EnableComboInput::Notify(USkeletalMeshComponent* MeshComp, UAni
     // 关键：仅在服务器（权威角色）执行逻辑
     if (MeshComp && MeshComp->GetOwnerRole() == ROLE_Authority)
     {
-        if (AWuwaBaseCharater* OwnerCharacter = Cast<AWuwaBaseCharater>(MeshComp->GetOwner()))
+        if (AWuwaBaseCharacter* OwnerCharacter = Cast<AWuwaBaseCharacter>(MeshComp->GetOwner()))
         {
             if (UWuwaAbilitySystemComponent* ASC = OwnerCharacter->GetWuwaAbilitySystemComponent())
             {

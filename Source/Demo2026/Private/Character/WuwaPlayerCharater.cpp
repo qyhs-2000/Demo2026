@@ -10,8 +10,12 @@
 #include "Components/WuwaEnhancedInputComponent.h"
 #include "WarriorGameplayTags.h"
 #include "DataAssets/DataAsset_RoleStartUp.h"
-
+#include "Components/RoleCombatComponent.h"
+#include "Components/UI/RoleUIComponent.h"
 #include "AbilitySystem/WuwaAbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "Components/CapsuleComponent.h"
+
 
 AWuwaPlayerCharater::AWuwaPlayerCharater()
 {
@@ -36,8 +40,21 @@ AWuwaPlayerCharater::AWuwaPlayerCharater()
 
 	OverrideInputComponentClass  = UWuwaEnhancedInputComponent::StaticClass();
 
-	
+	RoleCombatComponent = CreateDefaultSubobject<URoleCombatComponent>(TEXT("RoleCombatComponent"));
 
+	RoleUIComponent = CreateDefaultSubobject<URoleUIComponent>(TEXT("RoleUIComponent"));
+
+	
+}
+
+UPawnCombatComponent* AWuwaPlayerCharater::GetPawnCombatComponent() const
+{
+	return RoleCombatComponent;
+}
+
+UPawnUIComponent* AWuwaPlayerCharater::GetPawnUIComponent() const
+{
+	return RoleUIComponent;
 }
 
 void AWuwaPlayerCharater::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -55,6 +72,10 @@ void AWuwaPlayerCharater::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &ThisClass::InputLook);
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::InputMove);
+	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+
+	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Triggered, this, &ThisClass::Input_SwitchTargetTrigger);
+	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Completed, this, &ThisClass::Input_SwitchTargetCompleted);
 
 	WuwaInputComponent->BindAbilityInputAction(InputConfig,this,&ThisClass::AbilityInputPressed,&ThisClass::AbilityInputReleased);
 }
@@ -62,9 +83,9 @@ void AWuwaPlayerCharater::SetupPlayerInputComponent(UInputComponent* PlayerInput
 void AWuwaPlayerCharater::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-	if (!RoleStartUpData.IsNull())
+	if (!CharacterStartUpData.IsNull())
 	{
-		if (UDataAsset_RoleStartUp* LoadedDataAsset = RoleStartUpData.LoadSynchronous())
+		if (UDataAsset_StartUpBase* LoadedDataAsset = CharacterStartUpData.LoadSynchronous())
 		{
 			LoadedDataAsset->GiveAbilityToAbilitSystemComponent(WuwaAbilitySystemComponent);
 		}
@@ -106,6 +127,18 @@ void AWuwaPlayerCharater::InputMove(const FInputActionValue &InputValue)
 	OnMoveInput.Broadcast();
 }
 
+void AWuwaPlayerCharater::Input_SwitchTargetTrigger(const FInputActionValue& InputValue)
+{
+	SwitchDirection = InputValue.Get<FVector2D>();
+}
+
+void AWuwaPlayerCharater::Input_SwitchTargetCompleted(const FInputActionValue& InputValue)
+{
+	FGameplayEventData Data;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, SwitchDirection.X > 0 ? WuwaGameplayTags::Player_Event_SwitchTargetLock_Right : WuwaGameplayTags::Player_Event_SwitchTargetLock_Left,
+		Data);
+}
+
 void AWuwaPlayerCharater::AbilityInputPressed(FGameplayTag InputTag)
 {
 	WuwaAbilitySystemComponent->OnAbilityInputPressed(InputTag);
@@ -114,4 +147,46 @@ void AWuwaPlayerCharater::AbilityInputPressed(FGameplayTag InputTag)
 void AWuwaPlayerCharater::AbilityInputReleased(FGameplayTag InputTag)
 {
 	WuwaAbilitySystemComponent->OnAbilityInputReleased(InputTag);
+}
+
+void AWuwaPlayerCharater::BeginPlay()
+{
+	Super::BeginPlay();
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	//if (MeshComp)
+	//{
+	//	// 重要：设置碰撞在客户端也参与物理
+	//	MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//	MeshComp->SetCollisionObjectType(ECC_Pawn);
+	//	MeshComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	//	MeshComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	//	MeshComp->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
+	//	MeshComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	//	MeshComp->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Block);
+	//	MeshComp->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Block);
+	//	MeshComp->SetCollisionResponseToChannel(ECC_Destructible, ECR_Block);
+
+	//	// 确保网络同步
+	//	MeshComp->SetIsReplicated(true);
+
+	//	// 对于Simulated Proxy，也启用碰撞事件
+	//	if (GetLocalRole() == ROLE_SimulatedProxy)
+	//	{
+	//		MeshComp->SetGenerateOverlapEvents(true);
+	//	}
+	//}
+
+	//// 胶囊体组件
+	//UCapsuleComponent* Capsule = GetCapsuleComponent();
+	//if (Capsule)
+	//{
+	//	Capsule->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	//	Capsule->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	//	Capsule->SetIsReplicated(true);
+
+	//	if (GetLocalRole() == ROLE_SimulatedProxy)
+	//	{
+	//		Capsule->SetGenerateOverlapEvents(true);
+	//	}
+	//}
 }

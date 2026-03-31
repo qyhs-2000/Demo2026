@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "AnimInstance/WuwaBaseAnimInstance.h"
+#include "GameplayTagContainer.h"
 #include "WuwaCharacterAnimInstance.generated.h"
 
 /**
  * 
  */
 
-class AWuwaBaseCharater;
+class AWuwaBaseCharacter;
 class UCharacterMovementComponent;
 UCLASS()
 class DEMO2026_API UWuwaCharacterAnimInstance : public UWuwaBaseAnimInstance
@@ -28,9 +29,23 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wuwa|Anim")
 	bool bHasAcceleration = false;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Wuwa|Anim")
+	bool bIsFalling = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wuwa|Anim")
-	TSoftObjectPtr<AWuwaBaseCharater> OwningCharacter;
+	TSoftObjectPtr<AWuwaBaseCharacter> OwningCharacter;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Wuwa|Anim")
 	UCharacterMovementComponent* OwningCharacterMovement;
+
+	UFUNCTION(BlueprintPure, Category = "Wuwa|Anim",meta = (BlueprintThreadSafe))
+	bool HasTag(FGameplayTag TagToCheck);
+
+protected:
+	// 目标方向（瞬时计算值）
+	float TargetLocomotionDirection = 0.f;
+
+	// 插值速度，建议 8.0 - 12.0 之间，值越大响应越快，越小越平滑
+	UPROPERTY(EditAnywhere, Category = "Locomotion")
+	float DirectionInterpSpeed = 10.0f;
 };

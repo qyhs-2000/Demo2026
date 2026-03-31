@@ -1,0 +1,2 @@
+GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+如果没有加上这个的话，在play as client的情况下，server端的weapon collision box没有跟随攻击动画而发生改变，在play as listen server的话是正常的

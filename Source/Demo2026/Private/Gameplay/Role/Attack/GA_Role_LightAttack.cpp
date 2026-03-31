@@ -2,12 +2,14 @@
 
 
 #include "Gameplay/Role/Attack/GA_Role_LightAttack.h"
-#include "WarriorGameplayTags.h"
+
 #include "Kismet/KismetMathLibrary.h"
 #include "Animation/AnimMontage.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Character/WuwaPlayerCharater.h"
 #include "Net/UnrealNetwork.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "DebugHelper.h"
 UGA_Role_LightAttack::UGA_Role_LightAttack()
 {
@@ -28,6 +30,14 @@ void UGA_Role_LightAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	}
 	bCanBeInterrupted = false;
 	//PlayComboMontage();
+
+	UAbilityTask_WaitGameplayEvent* WaitGameplayEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, WuwaGameplayTags::Shared_Event_MeleeHit);
+	if (WaitGameplayEvent)
+	{
+		WaitGameplayEvent->EventReceived.AddUniqueDynamic(this, &ThisClass::HandleDamage);
+		WaitGameplayEvent->ReadyForActivation();
+
+	}
 }
 
 void UGA_Role_LightAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -36,8 +46,8 @@ void UGA_Role_LightAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, c
 	{
 		PlayerChar->OnMoveInput.RemoveAll(this);
 	}
-	bCanBeInterrupted = false;
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	ResetAttack();
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, true, bWasCancelled);
 	//AttackComboCount = 0;
 }
 
@@ -48,7 +58,7 @@ void UGA_Role_LightAttack::PlayComboMontage()
 
 	int32 MontageIndex = AttackComboCount % LightAttackMontages.Num();
 	UAnimMontage* MontageToPlay = LightAttackMontages[MontageIndex];
-	debug::Print(GetRoleCharacterInfo(), FString::Printf(TEXT("%s Play Combo Index: %d"), GetRoleCharacterInfo()->GetLocalRole() < ROLE_Authority ? TEXT("Client ") : TEXT("Server "), MontageIndex));
+	//debug::Print(GetRoleCharacterInfo(), FString::Printf(TEXT("%s Play Combo Index: %d"), GetRoleCharacterInfo()->GetLocalRole() < ROLE_Authority ? TEXT("Client ") : TEXT("Server "), MontageIndex));
 
 	if (AWuwaPlayerCharater* Character = Cast<AWuwaPlayerCharater>(GetAvatarActorFromActorInfo()))
 	{
@@ -63,9 +73,7 @@ void UGA_Role_LightAttack::PlayComboMontage()
 
 void UGA_Role_LightAttack::ResetCombo_Implementation()
 {
-
 	ServerResetCombo();
-
 }
 
 bool UGA_Role_LightAttack::CanActivateAbility(
@@ -79,6 +87,25 @@ bool UGA_Role_LightAttack::CanActivateAbility(
 		return false;
 
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+}
+
+void UGA_Role_LightAttack::HandleDamage(FGameplayEventData EventData)
+{
+
+	if (const AActor* TargetConst = EventData.Target)
+	{
+		AActor* Target = const_cast<AActor*>(TargetConst);
+		EWuwaSuccessType WasSuccessfulApplyed = EWuwaSuccessType::Failed;
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeRoleDamageSpecHandle(GE_DealDamage_Class, 10.f);
+		ApplyEffectSpecHandleToTargetActor(Target, EffectSpecHandle, WasSuccessfulApplyed);
+
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
+			Target,
+			WuwaGameplayTags::Shared_Event_HitReact,
+			EventData
+		);
+	}
+	//debug::Print(FString::Printf(TEXT("%s apply damage to %s"), *EventData.Instigator->GetActorNameOrLabel(), *EventData.Target->GetActorNameOrLabel()));
 }
 
 void UGA_Role_LightAttack::ServerResetCombo_Implementation()
@@ -131,6 +158,19 @@ void UGA_Role_LightAttack::PlayAnimMontage(UAnimMontage* MontageToPlay)
 	{
 		CurrentPlayTask->EndTask();
 	}
+
+	AWuwaPlayerCharater* PC = GetRoleCharacterInfo();
+	if (PC)
+	{
+		FVector InputVector = PC->GetLastMovementInputVector();
+		if (!InputVector.IsNearlyZero())
+		{
+			InputVector = PC->GetLastMovementInputVector();
+			FRotator InputRot = InputVector.Rotation();
+			PC->SetActorRotation(FRotator(0.f, InputRot.Yaw, 0.f));
+		}
+	}
+
 	CurrentPlayTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this,
 		FName(TEXT("PlayLightAttack")),
@@ -139,13 +179,20 @@ void UGA_Role_LightAttack::PlayAnimMontage(UAnimMontage* MontageToPlay)
 
 	CurrentPlayTask->OnCompleted.AddDynamic(this, &UGA_Role_LightAttack::OnMontageCompleted);
 	//CurrentPlayTask->OnInterrupted.AddDynamic(this, &UGA_Role_LightAttack::OnMontageCompleted);
-	//CurrentPlayTask->OnCancelled.AddDynamic(this, &UGA_Role_LightAttack::OnMontageCompleted);
+	CurrentPlayTask->OnCancelled.AddDynamic(this, &UGA_Role_LightAttack::OnMontageCompleted);
 
 	CurrentPlayTask->ReadyForActivation();
 
 	bComboInputAllowed = false;
 	bComboQueued = false;
 	AttackComboCount++;
+}
+
+void UGA_Role_LightAttack::ResetAttack()
+{
+	bCanBeInterrupted = false;
+	bComboInputAllowed = true;
+	AttackComboCount = 0;
 }
 
 bool UGA_Role_LightAttack::Server_OnInputPressed_Validate()
@@ -176,9 +223,9 @@ void UGA_Role_LightAttack::OnInputPressed()
 
 void UGA_Role_LightAttack::Server_OnInputPressed_Implementation()
 {
-	//if (bComboInputAllowed)
+	if (bComboInputAllowed)
 	{
-		TryContinueCombo(); 
+		TryContinueCombo();
 	}
 }
 
@@ -208,7 +255,7 @@ void UGA_Role_LightAttack::SetCanBeInterrupted(bool bCanInterrupted)
 
 void UGA_Role_LightAttack::OnRep_ReceiveInterrupted()
 {
-	debug::Print(FString::Printf(TEXT("  Be Interrupted Changed")));
+	//debug::Print(FString::Printf(TEXT("  Be Interrupted Changed")));
 }
 
 void UGA_Role_LightAttack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
