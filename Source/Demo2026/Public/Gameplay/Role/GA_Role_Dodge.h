@@ -40,4 +40,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	UGameplayEffect* CooldownGE;
+
+	bool bWasMovingOnDodgeStart = false;
 };

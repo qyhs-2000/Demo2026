@@ -24,12 +24,17 @@ void UGA_Role_LightAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+
 	if (AWuwaPlayerCharater* Character = Cast<AWuwaPlayerCharater>(GetAvatarActorFromActorInfo()))
 	{
 		Character->OnMoveInput.AddUObject(this, &ThisClass::OnMoveInputReceived);
 	}
 	bCanBeInterrupted = false;
-	//PlayComboMontage();
 
 	UAbilityTask_WaitGameplayEvent* WaitGameplayEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, WuwaGameplayTags::Shared_Event_MeleeHit);
 	if (WaitGameplayEvent)
@@ -62,12 +67,8 @@ void UGA_Role_LightAttack::PlayComboMontage()
 
 	if (AWuwaPlayerCharater* Character = Cast<AWuwaPlayerCharater>(GetAvatarActorFromActorInfo()))
 	{
-		if (Character->HasAuthority()) // ֻ�ڷ���˵���Multicast
-		{
-			MulticastPlayMontage(MontageToPlay);
-		}
+		PlayAnimMontage(MontageToPlay);
 	}
-
 
 }
 
@@ -147,11 +148,6 @@ void UGA_Role_LightAttack::EnableComboInput()
 	}
 }
 
-void UGA_Role_LightAttack::MulticastPlayMontage_Implementation(UAnimMontage* MontageToPlay)
-{
-	PlayAnimMontage(MontageToPlay);
-}
-
 void UGA_Role_LightAttack::PlayAnimMontage(UAnimMontage* MontageToPlay)
 {
 	if (CurrentPlayTask)
@@ -195,11 +191,6 @@ void UGA_Role_LightAttack::ResetAttack()
 	AttackComboCount = 0;
 }
 
-bool UGA_Role_LightAttack::Server_OnInputPressed_Validate()
-{
-	return true;
-}
-
 void UGA_Role_LightAttack::TryContinueCombo()
 {
 	PlayComboMontage();
@@ -208,25 +199,13 @@ void UGA_Role_LightAttack::TryContinueCombo()
 
 void UGA_Role_LightAttack::OnInputPressed()
 {
-	//Client
-	if (GetRoleCharacterInfo()->GetLocalRole() < ROLE_Authority)
+	if (!bComboInputAllowed)
 	{
-		Server_OnInputPressed();
-	}
-	else if (bComboInputAllowed)
-	{
-		//debug::Print(TEXT("Combo Input accepted immediately"));
-		TryContinueCombo();
+		//bComboQueued = true;
+		return;
 	}
 
-}
-
-void UGA_Role_LightAttack::Server_OnInputPressed_Implementation()
-{
-	if (bComboInputAllowed)
-	{
-		TryContinueCombo();
-	}
+	TryContinueCombo();
 }
 
 

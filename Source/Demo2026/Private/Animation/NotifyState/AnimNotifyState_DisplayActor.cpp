@@ -4,6 +4,8 @@
 #include "Animation/NotifyState/AnimNotifyState_DisplayActor.h"
 #include "Character/WuwaBaseCharater.h"
 #include "Weapon/WuwaWeaponBase.h"
+#include "DebugHelper.h"
+
 void UAnimNotifyState_DisplayWeapon::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
@@ -12,19 +14,23 @@ void UAnimNotifyState_DisplayWeapon::NotifyBegin(USkeletalMeshComponent* MeshCom
 	{
 		if (AWuwaWeaponBase* TargetWeapon = OwnerCharacter->GetCurrentWeaponByType(WeaponType))
 		{
-			CachedWeapon = TargetWeapon;
-			CachedWeapon->SetActorHiddenInGame(false);
+			//CachedWeapon = TargetWeapon;
+			TargetWeapon->SetActorHiddenInGame(false);
 		}
 	}
-
+	
 }
 
 void UAnimNotifyState_DisplayWeapon::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
-	if (CachedWeapon)
+	if (AWuwaBaseCharacter * OwnerCharacter = Cast<AWuwaBaseCharacter>(MeshComp->GetOwner()))
 	{
-		CachedWeapon->SetActorHiddenInGame(true);
+		if (AWuwaWeaponBase* TargetWeapon = OwnerCharacter->GetCurrentWeaponByType(WeaponType))
+		{
+			//CachedWeapon = TargetWeapon;
+			TargetWeapon->SetActorHiddenInGame(true);
+		}
 	}
 }

@@ -9,13 +9,20 @@
 /**
  * 
  */
+
+class UWuwaAttributeSet;
+
 UCLASS()
 class DEMO2026_API UWuwaAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 public:
+	UWuwaAbilitySystemComponent();
 	void OnAbilityInputPressed(FGameplayTag InputTag);
 	void OnAbilityInputReleased(FGameplayTag InputTag);
 
 	bool TryActivateAbilityByTag(FGameplayTag InTagToActivate);
+
+	UPROPERTY()
+	UWuwaAttributeSet* WuwaAttributeSet;
 };

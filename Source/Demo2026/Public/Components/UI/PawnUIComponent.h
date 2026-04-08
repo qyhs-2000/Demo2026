@@ -41,4 +41,6 @@ private:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	float GetCurrentHealthPercent()const;
+
+	bool bIsInitialized = false;
 };

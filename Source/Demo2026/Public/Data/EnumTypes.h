@@ -26,3 +26,13 @@ enum class EWuwaSuccessType :uint8
     Successful,
     Failed
 };
+
+UENUM(BlueprintType)
+enum class EDodgeDirection :uint8
+{
+    Dodge_None,
+    Dodge_Forward,
+    Dodge_Backward,
+    Dodge_Left,
+    Dodge_Right
+};

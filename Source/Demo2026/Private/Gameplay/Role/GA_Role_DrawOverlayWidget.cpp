@@ -17,7 +17,6 @@ void UGA_Role_DrawOverlayWidget::OnAbilityActivate()
 	}
 
 
-
 	if (OverlayWidget == nullptr)
 	{
 		OverlayWidget = CreateWidget<UWuwaWidgetBase>(GetRoleControllerFromActorInfo(), OverlayWidgetClass);

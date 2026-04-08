@@ -9,12 +9,53 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 
+namespace
+{
+	FVector ResolveDodgeDirection(AWuwaPlayerCharater* PlayerCharacter)
+	{
+		if (!PlayerCharacter)
+		{
+			return FVector::ZeroVector;
+		}
+
+		// Owning clients have the freshest raw input. Remote/server instances should
+		// fall back to replicated movement state instead of local input buffers.
+		if (PlayerCharacter->IsLocallyControlled())
+		{
+			FVector InputVector = PlayerCharacter->GetPendingMovementInputVector();
+			if (InputVector.IsNearlyZero())
+			{
+				InputVector = PlayerCharacter->GetLastMovementInputVector();
+			}
+
+			if (!InputVector.IsNearlyZero())
+			{
+				return InputVector;
+			}
+		}
+
+		if (const UCharacterMovementComponent* MoveComp = PlayerCharacter->GetCharacterMovement())
+		{
+			const FVector Acceleration = MoveComp->GetCurrentAcceleration();
+			if (!Acceleration.IsNearlyZero())
+			{
+				return Acceleration;
+			}
+		}
+
+		return PlayerCharacter->GetVelocity();
+	}
+}
+
 UGA_Role_Dodge::UGA_Role_Dodge()
 {
 	AbilityTags.AddTag(WuwaGameplayTags::Player_Ability_Dodge);
 	CancelAbilitiesWithTag.AddTag(WuwaGameplayTags::Player_Ability_Attack_Light);
 	//ActivationOwnedTags.AddTag(WuwaGameplayTags::Shared_Status_Invincible);
 	ActivationOwnedTags.AddTag(WuwaGameplayTags::Player_Status_Dodging);
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
+	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
 }
 
 void UGA_Role_Dodge::OnAbilityActivate()
@@ -29,6 +70,7 @@ void UGA_Role_Dodge::OnAbilityActivate()
 	if (!PC)
 	{
 		EndAbility();
+		return;
 	}
 
 	UAbilityTask_WaitGameplayEvent* WaitGameplayEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, WuwaGameplayTags::Player_Event_OnPerfectDodgeTrigger, nullptr, true);
@@ -36,11 +78,8 @@ void UGA_Role_Dodge::OnAbilityActivate()
 	WaitGameplayEventTask->ReadyForActivation();
 
 	UAnimMontage* MontageToPlay = nullptr;
-	FVector InputVector = PC->GetPendingMovementInputVector();
-	if (InputVector.IsNearlyZero())
-	{
-		InputVector = PC->GetLastMovementInputVector();
-	}
+	const FVector InputVector = ResolveDodgeDirection(PC);
+	bWasMovingOnDodgeStart = !InputVector.IsNearlyZero();
 	if (InputVector.IsNearlyZero())
 	{
 		MontageToPlay = AM_MoveBack;
@@ -61,13 +100,20 @@ void UGA_Role_Dodge::OnAbilityActivate()
 void UGA_Role_Dodge::OnPerfectDodgeTrigger(FGameplayEventData Payload)
 {
 	AWuwaPlayerCharater* PC = GetRoleCharacterInfo();
-	bool IsMoving = PC->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
+	if (!PC)
+	{
+		EndAbility();
+		return;
+	}
+
+	const bool IsMoving = bWasMovingOnDodgeStart;
 	UAnimMontage* PerfectMontage = IsMoving ? AM_DodgeForward : AM_DodgeBack;
 	if (CurrentPlayTask)
 	{
 		CurrentPlayTask->EndTask();
 	}
 	CurrentPlayTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("Play Dodge Anim"), PerfectMontage);
+	CurrentPlayTask->OnCancelled.AddUniqueDynamic(this, &ThisClass::OnMontageCancelOrComplete);
 	CurrentPlayTask->OnCompleted.AddUniqueDynamic(this, &ThisClass::OnMontageCancelOrComplete);
 	CurrentPlayTask->ReadyForActivation();
 

@@ -6,21 +6,23 @@
 #include "AbilitySystem/WuwaAttributeSet.h"
 void UPawnUIComponent::InitializeComp(UWuwaAbilitySystemComponent* InAsc)
 {
-	if (!InAsc)
+	if (!InAsc|| bIsInitialized)
 	{
 		return;
 	}
 	AbilitySystemComponent = InAsc;
 	AttributeSet = AbilitySystemComponent->GetSet<UWuwaAttributeSet>();
 	check(AttributeSet);
+	if(AttributeSet)
 	BindCallback();
+	bIsInitialized = true;
 }
 
 
 
 void UPawnUIComponent::HandleCurrentHealthChanged(const FOnAttributeChangeData& ChangeData)
 {
-	if (!AttributeSet)
+	if (!AttributeSet||!bIsInitialized)
 	{
 		return;
 	}
@@ -33,16 +35,17 @@ void UPawnUIComponent::HandleCurrentHealthChanged(const FOnAttributeChangeData& 
 
 void UPawnUIComponent::BindCallback()
 {
+	if (!AbilitySystemComponent) return;
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UWuwaAttributeSet::GetCurrentHealthAttribute()).AddUObject(this, &ThisClass::HandleCurrentHealthChanged);
 	//AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UWuwaAttributeSet::GetMaxHealthAttribute()).AddUObject(this, &ThisClass::HandleMaxHealthChanged);
 }
 
 float UPawnUIComponent::GetCurrentHealthPercent() const
 {
-	if (AttributeSet)
+	if (!bIsInitialized ||!AttributeSet)
 	{
-		float MaxHealth = AttributeSet->GetMaxHealth();
-		return (MaxHealth > 0.f) ? (AttributeSet->GetCurrentHealth() / MaxHealth) : 0.f;
+		return 0.0f;
 	}
-	return 0.0f;
+	float MaxHealth = AttributeSet->GetMaxHealth();
+		return (MaxHealth > 0.f) ? (AttributeSet->GetCurrentHealth() / MaxHealth) : 0.f;
 }

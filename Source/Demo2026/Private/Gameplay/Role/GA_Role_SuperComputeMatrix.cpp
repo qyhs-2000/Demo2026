@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Components/TimeDilationManagerComponent.h"
+#include "Character/WuwaPlayerCharater.h"
+#include "Components/PostProcessComponent.h"
 #include "DebugHelper.h"
 
 UGA_Role_SuperComputeMatrix::UGA_Role_SuperComputeMatrix()
@@ -37,12 +39,21 @@ void UGA_Role_SuperComputeMatrix::OnAbilityActivate()
 
 	SavedWorldDilation = UGameplayStatics::GetGlobalTimeDilation(this);
 	UGameplayStatics::SetGlobalTimeDilation(this, WorldFreezeDilation);
-	
+
 	if (AActor* PlayerActor = GetAvatarActorFromActorInfo())
 	{
 		if (UTimeDilationManagerComponent* TDM = PlayerActor->FindComponentByClass<UTimeDilationManagerComponent>())
 		{
 			TDM->AddTimeOverride(TimeEffectName, 1.0f, 50, true);
+		}
+
+		if (AWuwaPlayerCharater* PC = GetRoleCharacterInfo())
+		{
+			if (PC->MatrixPostProcess)
+			{
+				PC->MatrixPostProcess->bEnabled = true;
+
+			}
 		}
 	}
 	float ActualDilation = UGameplayStatics::GetGlobalTimeDilation(this);
@@ -50,12 +61,14 @@ void UGA_Role_SuperComputeMatrix::OnAbilityActivate()
 	float CompensatedDuration = ActivateDuration * ActualDilation;
 
 	GetWorld()->GetTimerManager().SetTimer(
-		FreezeTimeHandle, 
-		this, 
-		&UGA_Role_SuperComputeMatrix::RestoreTimeAndEnd, 
-		CompensatedDuration, 
+		FreezeTimeHandle,
+		this,
+		&UGA_Role_SuperComputeMatrix::RestoreTimeAndEnd,
+		CompensatedDuration,
 		false
 	);
+
+
 
 }
 
@@ -70,10 +83,21 @@ void UGA_Role_SuperComputeMatrix::OnEndAbility()
 			TDM->RemoveTimeOverride(TimeEffectName);
 		}
 	}
+
+	if (AActor* PlayerActor = GetAvatarActorFromActorInfo())
+	{
+		if (AWuwaPlayerCharater* PC = GetRoleCharacterInfo())
+		{
+			if (PC->MatrixPostProcess)
+			{
+				PC->MatrixPostProcess->bEnabled = false;
+			}
+		}
+	}
 }
 
 void UGA_Role_SuperComputeMatrix::RestoreTimeAndEnd()
 {
-	
+
 	EndAbility();
 }

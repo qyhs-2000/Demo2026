@@ -5,3 +5,5 @@ Intermediate
 Saved
 *.sln
 HL_hair_s.png
+.vscode/
+/.vscode/*

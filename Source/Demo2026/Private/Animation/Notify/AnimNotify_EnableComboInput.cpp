@@ -9,8 +9,7 @@ void UAnimNotify_EnableComboInput::Notify(USkeletalMeshComponent* MeshComp, UAni
 {
     Super::Notify(MeshComp, Animation, EventReference);
 
-    // 关键：仅在服务器（权威角色）执行逻辑
-    if (MeshComp && MeshComp->GetOwnerRole() == ROLE_Authority)
+    if (MeshComp)
     {
         if (AWuwaBaseCharacter* OwnerCharacter = Cast<AWuwaBaseCharacter>(MeshComp->GetOwner()))
         {
@@ -20,10 +19,9 @@ void UAnimNotify_EnableComboInput::Notify(USkeletalMeshComponent* MeshComp, UAni
                 {
                     if (UGA_Role_LightAttack* Ability = Cast<UGA_Role_LightAttack>(Spec.GetPrimaryInstance()))
                     {
-                        if (Ability->IsActive()) // 确保能力正在激活中
+                        if (Ability->IsActive())
                         {
-                            Ability->EnableComboInput(); // 服务器端更新bComboInputAllowed
-                            UE_LOG(LogTemp, Log, TEXT("Server: Enable combo input")); // 调试日志
+                            Ability->EnableComboInput(); 
                         }
                     }
                 }

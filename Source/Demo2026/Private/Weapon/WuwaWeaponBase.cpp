@@ -52,22 +52,20 @@ void AWuwaWeaponBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (bDrawCollisionBox )
 	{
-		// 获取碰撞盒的变换
 		FTransform BoxTransform = WeaponCollisionBox->GetComponentTransform();
 		FVector Extent = WeaponCollisionBox->GetScaledBoxExtent();
 
 		FColor DrawColor = HasAuthority() ? FColor::Green : FColor::Red;
-		// 绘制盒子
 		DrawDebugBox(
 			GetWorld(),
 			BoxTransform.GetLocation(),
 			Extent,
 			BoxTransform.GetRotation(),
 			DrawColor,
-			false,  // 不持久
-			-1.0f,  // 每帧绘制
-			0,      // 深度优先级
-			2.0f    // 线粗
+			false,  
+			-1.0f,  
+			0,      
+			2.0f    
 		);
 
 		if (HasAuthority())

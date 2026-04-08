@@ -18,7 +18,7 @@ struct FInputActionValue;
 class UDataAsset_RoleStartUp;
 class URoleCombatComponent;
 class URoleUIComponent;
-
+class UPostProcessComponent;
 
 DECLARE_MULTICAST_DELEGATE(FOnMoveInput);
 
@@ -31,12 +31,16 @@ public:
 	void AbilityInputPressed(FGameplayTag InputTag);
 	void AbilityInputReleased(FGameplayTag InputTag);
 	virtual void BeginPlay() override;
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAbilityInputPressed(FGameplayTag InputTag);
 	FOnMoveInput OnMoveInput;
 
 	virtual UPawnCombatComponent* GetPawnCombatComponent() const override;
 	virtual UPawnUIComponent* GetPawnUIComponent() const override;
 
-	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Components")
+	UPostProcessComponent *MatrixPostProcess;
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;

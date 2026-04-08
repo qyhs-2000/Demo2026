@@ -27,4 +27,7 @@ protected:
 
 private:
 	AWuwaWeaponBase* CachedWeapon = nullptr;
+	int test = 0;
 };
+
+

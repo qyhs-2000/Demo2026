@@ -2,7 +2,13 @@
 
 
 #include "AbilitySystem/WuwaAbilitySystemComponent.h"
+#include "AbilitySystem/WuwaAttributeSet.h"
+#include "WarriorGameplayTags.h"
 #include "Gameplay/Role/Attack/GA_Role_LightAttack.h"
+
+UWuwaAbilitySystemComponent::UWuwaAbilitySystemComponent()
+{
+}
 
 void UWuwaAbilitySystemComponent::OnAbilityInputPressed(FGameplayTag InputTag)
 {
@@ -11,9 +17,11 @@ void UWuwaAbilitySystemComponent::OnAbilityInputPressed(FGameplayTag InputTag)
 		return;
 	}
 
-	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	const auto& Abilities = GetActivatableAbilities();
+	for (const FGameplayAbilitySpec& AbilitySpec : Abilities)
 	{
 		if (!AbilitySpec.DynamicAbilityTags.HasTagExact(InputTag)) continue;
+
 
 		if (InputTag.MatchesTag(WuwaGameplayTags::InputTag_Toggleable) && AbilitySpec.IsActive())
 		{
@@ -25,11 +33,13 @@ void UWuwaAbilitySystemComponent::OnAbilityInputPressed(FGameplayTag InputTag)
 			TryActivateAbility(AbilitySpec.Handle);
 
 		}
+
 		if (UGameplayAbility* ActiveAbility = AbilitySpec.GetPrimaryInstance())
 		{
 			if (UGA_Role_LightAttack* AttackAbility = Cast<UGA_Role_LightAttack>(ActiveAbility))
 			{
 				AttackAbility->OnInputPressed();
+				return;
 			}
 		}
 	}

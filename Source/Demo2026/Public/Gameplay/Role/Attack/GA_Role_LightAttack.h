@@ -66,24 +66,11 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION(Server,Reliable,WithValidation)
-	void Server_OnInputPressed();
-
-
-	UFUNCTION(NetMulticast,Reliable)
-	void MulticastPlayMontage(UAnimMontage* MontageToPlay);
-
 	void PlayAnimMontage(UAnimMontage* MontageToPlay);
 	void ResetAttack();
 	
 	UPROPERTY(Replicated)
 	bool bComboInputAllowed = true;   
-
-	UFUNCTION()
-	bool Server_OnInputPressed_Validate();
-
-	UFUNCTION()
-	void Server_OnInputPressed_Implementation();
 
 	bool CanActivateAbility(
 		const FGameplayAbilitySpecHandle Handle,
