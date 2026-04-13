@@ -22,4 +22,5 @@ public:
 	static UWuwaAbilitySystemComponent* GetASCFromActorInfo(AActor * InActor);
 	static void AddGameplayTagToActorIfNone(AActor* TargetActor, FGameplayTag TagToAdd);
 	static bool NativeDoesActorHaveTag(AActor* InActor, FGameplayTag Tag);
+	
 };

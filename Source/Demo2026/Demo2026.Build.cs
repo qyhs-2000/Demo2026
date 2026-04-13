@@ -17,7 +17,8 @@ public class Demo2026 : ModuleRules
             "GameplayTags",
             "AnimGraphRuntime",
             "GameplayTasks",
-            "GameplayAbilities"
+            "GameplayAbilities",
+			"Niagara",
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
