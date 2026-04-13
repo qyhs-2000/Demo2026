@@ -21,6 +21,7 @@ void UGA_Enemy_ProjectileShoot::ActivateAbility(const FGameplayAbilitySpecHandle
         UAbilityTask_PlayMontageAndWait* Task = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, ShootMontage, 1.0f);
         Task->OnBlendOut.AddUniqueDynamic(this, &UGA_Enemy_ProjectileShoot::OnMontageCancelOrComplete);
         Task->OnCompleted.AddUniqueDynamic(this, &UGA_Enemy_ProjectileShoot::OnMontageCancelOrComplete);
+        Task->OnInterrupted.AddUniqueDynamic(this, &UGA_Enemy_ProjectileShoot::OnMontageCancelOrComplete);
         Task->OnCancelled.AddUniqueDynamic(this, &UGA_Enemy_ProjectileShoot::OnMontageCancelOrComplete);
         Task->ReadyForActivation();
 
@@ -32,6 +33,7 @@ void UGA_Enemy_ProjectileShoot::ActivateAbility(const FGameplayAbilitySpecHandle
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("ShootMontage is not set in %s"), *GetName());
+        EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
     }
    
     //SpawnProjectile(FGameplayEventData()); // Optionally spawn a projectile immediately without waiting for the montage event. You can remove this if you only want to spawn on the event.

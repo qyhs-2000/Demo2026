@@ -20,13 +20,23 @@ UGA_HitReact::UGA_HitReact()
 
 void UGA_HitReact::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	UAnimMontage* AM_HitReact = GetHitReactMontage();
+	if (!AM_HitReact)
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		return;
+	}
+
 	UAbilityTask_PlayMontageAndWait *WaitAbilityTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, TEXT("PlayHitReactMontage"), AM_HitReact);
 	
 	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetEnemyCharacterFromActorInfo()->GetActorLocation(), TriggerEventData->Instigator->GetActorLocation());
 	GetEnemyCharacterFromActorInfo()->SetActorRotation(LookAtRotation);
 	
+	WaitAbilityTask->OnBlendOut.AddDynamic(this, &ThisClass::OnMontageCancelOrComplete);
+	WaitAbilityTask->OnCompleted.AddDynamic(this, &ThisClass::OnMontageCancelOrComplete);
+	WaitAbilityTask->OnInterrupted.AddDynamic(this, &ThisClass::OnMontageCancelOrComplete);
 	WaitAbilityTask->OnCancelled.AddDynamic(this, &ThisClass::OnMontageCancelOrComplete);
 	WaitAbilityTask->ReadyForActivation();
 
