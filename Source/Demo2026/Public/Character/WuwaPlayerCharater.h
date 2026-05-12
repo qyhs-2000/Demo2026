@@ -44,6 +44,7 @@ public:
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataAsset_InputConfig* InputConfig;
 

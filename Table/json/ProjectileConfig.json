@@ -1,0 +1,12 @@
+[
+    {
+        "Name": "Projectile.Glacer.Fireball",
+        "ProjectileId": "Projectile.Glacer.Fireball",
+        "MoveSpeed": 1200,
+        "LifeTime": 4,
+        "CollisionRadius": 30,
+        "ExplosionRadius": 100,
+        "CanPierce": false,
+        "MaxHitCount": 1
+    }
+]

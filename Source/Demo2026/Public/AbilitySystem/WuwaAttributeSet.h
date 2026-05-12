@@ -54,6 +54,8 @@ public:
 	void OnRep_CurrentHealth(const FGameplayAttributeData& OldValue);
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldValue);
+	
+	void InitializeAttributes();
 private:
 	TWeakInterfacePtr<IPawnUIInterface> CachedPawnUIInterface;
 };

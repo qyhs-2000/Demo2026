@@ -1,0 +1,26 @@
+[
+    {
+        "Name": "Loadout.Player.Main.01",
+        "AbilityLoadoutId": "Loadout.Player.Main",
+        "GrantOrder": 1,
+        "AbilityId": "Ability.Player.LightCombo"
+    },
+    {
+        "Name": "Loadout.Enemy.Guardian.01",
+        "AbilityLoadoutId": "Loadout.Enemy.Guardian",
+        "GrantOrder": 1,
+        "AbilityId": "Ability.Enemy.Guardian.Melee"
+    },
+    {
+        "Name": "Loadout.Enemy.Glacer.01",
+        "AbilityLoadoutId": "Loadout.Enemy.Glacer",
+        "GrantOrder": 1,
+        "AbilityId": "Ability.Enemy.Glacer.Melee"
+    },
+    {
+        "Name": "Loadout.Enemy.Glacer.02",
+        "AbilityLoadoutId": "Loadout.Enemy.Glacer",
+        "GrantOrder": 2,
+        "AbilityId": "Ability.Enemy.Glacer.Fireball"
+    }
+]

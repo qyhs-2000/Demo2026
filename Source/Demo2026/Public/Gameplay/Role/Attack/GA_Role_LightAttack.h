@@ -38,14 +38,8 @@ public:
 	UFUNCTION()
 	void EndAttackComboAbility();
 
-	UFUNCTION(NetMulticast,Reliable)
+	UFUNCTION()
 	void ResetCombo();
-
-	UFUNCTION(Server, Reliable)
-	void ServerResetCombo();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastResetCombo();
 
 	void EnableComboInput();
 	void TryContinueCombo();
@@ -86,6 +80,9 @@ public:
 	TSubclassOf<UGameplayEffect> GE_DealDamage_Class;
 
 	void UpdateRotationToInput();
+
+	UFUNCTION(Server, Reliable)
+	void ServerRPCTest();
 private:
 	UPROPERTY(Replicated)
 	bool bComboQueued = false;         // �Ƿ�����ǰ����

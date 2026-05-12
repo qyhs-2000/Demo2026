@@ -28,9 +28,10 @@ void UWuwaAbilitySystemComponent::OnAbilityInputPressed(FGameplayTag InputTag)
 			CancelAbilityHandle(AbilitySpec.Handle);
 		}
 		// first activate
-		else
+		if(!AbilitySpec.IsActive())
 		{
 			TryActivateAbility(AbilitySpec.Handle);
+			return;
 
 		}
 

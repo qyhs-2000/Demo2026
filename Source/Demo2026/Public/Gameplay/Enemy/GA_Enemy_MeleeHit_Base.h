@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+class UGameDataSubsystem;
+
 UCLASS()
 class DEMO2026_API UGA_Enemy_MeleeHit_Base : public UWuwaEnemyGameplayAbility
 {
@@ -29,4 +32,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly,EditDefaultsOnly)
 	FScalableFloat BaseDamageScalableFloat;
+
+	TWeakObjectPtr<UGameDataSubsystem> CachedGameDataSubsystem;
 };

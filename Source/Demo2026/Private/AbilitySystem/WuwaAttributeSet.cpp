@@ -11,6 +11,7 @@
 #include "Interfaces/PawnUIInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "AbilitySystem/WuwaAbilitySystemComponent.h"
+#include "Subsystem/GameDataSubsystem.h"
 #include "DebugHelper.h"
 
 UWuwaAttributeSet::UWuwaAttributeSet()
@@ -20,6 +21,45 @@ UWuwaAttributeSet::UWuwaAttributeSet()
 	InitAttackPower(1.f);
 	InitDefensePower(1.f);
 	InitDamageTaken(0.f);
+
+	
+
+}
+
+void UWuwaAttributeSet::InitializeAttributes()
+{
+	UGameDataSubsystem* GameDataSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>();
+	if (GameDataSubsystem)
+	{
+		AWuwaBaseCharacter* BaseCharacter = Cast<AWuwaBaseCharacter>(GetOwningActor());
+		if(BaseCharacter)
+		{
+			FUnitDefinitionRow* UnitDefinition = GameDataSubsystem->GetUnitDefinitionByID(BaseCharacter->UnitId);
+			if (UnitDefinition)
+			{
+				FStatProfileRow* StatProfile = GameDataSubsystem->GetStatProfileByID(UnitDefinition->StatProfileId);
+				if (StatProfile)
+				{
+					InitAttackPower(StatProfile->BaseAttackPower);
+					InitDefensePower(StatProfile->BaseDefensePower);
+					InitMaxHealth(StatProfile->BaseMaxHealth);
+					InitCurrentHealth(StatProfile->BaseMaxHealth);
+				}
+				else
+				{
+					InitCurrentHealth(1.f);
+					InitMaxHealth(1.f);
+					InitAttackPower(1.f);
+					InitDefensePower(1.f);
+					InitDamageTaken(0.f);
+				}
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("UWuwaAttributeSet::UWuwaAttributeSet: Failed to find UnitDefinition for UnitId %s"), *BaseCharacter->UnitId.ToString());
+			}
+		}
+	}
 }
 
 void UWuwaAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)

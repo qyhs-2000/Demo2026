@@ -14,7 +14,8 @@
 				"GameplayAbilities",
 				"CoreUObject",
 				"AIModule",
-				"UMG"
+				"UMG",
+				"DeveloperSettings"
 			]
 		}
 	],
@@ -28,6 +29,14 @@
 		},
 		{
 			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "RawInput",
+			"Enabled": true
+		},
+		{
+			"Name": "GASAttachEditor",
 			"Enabled": true
 		}
 	]

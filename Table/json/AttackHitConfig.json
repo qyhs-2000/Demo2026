@@ -1,0 +1,79 @@
+[
+    {
+        "Name": "Attack.Player.LightCombo.01",
+        "AttackId": "Attack.Player.LightCombo",
+        "HitIndex": 1,
+        "DamageCoefficient": 0.8,
+        "FlatDamage": 0,
+        "CanTriggerHitReact": true,
+        "HitReactStrength": 1.0,
+        "KnockbackDistance": 50,
+        "ProjectileId": null
+    },
+    {
+        "Name": "Attack.Player.LightCombo.02",
+        "AttackId": "Attack.Player.LightCombo",
+        "HitIndex": 2,
+        "DamageCoefficient": 0.95,
+        "FlatDamage": 0,
+        "CanTriggerHitReact": true,
+        "HitReactStrength": 1.0,
+        "KnockbackDistance": 60,
+        "ProjectileId": null
+    },
+    {
+        "Name": "Attack.Player.LightCombo.03",
+        "AttackId": "Attack.Player.LightCombo",
+        "HitIndex": 3,
+        "DamageCoefficient": 1.15,
+        "FlatDamage": 0,
+        "CanTriggerHitReact": true,
+        "HitReactStrength": 1.1,
+        "KnockbackDistance": 70,
+        "ProjectileId": null
+    },
+    {
+        "Name": "Attack.Player.LightCombo.04",
+        "AttackId": "Attack.Player.LightCombo",
+        "HitIndex": 4,
+        "DamageCoefficient": 1.4,
+        "FlatDamage": 5,
+        "CanTriggerHitReact": true,
+        "HitReactStrength": 1.3,
+        "KnockbackDistance": 120,
+        "ProjectileId": null
+    },
+    {
+        "Name": "Attack.Enemy.Guardian.Melee.01",
+        "AttackId": "Attack.Enemy.Guardian.Melee",
+        "HitIndex": 1,
+        "DamageCoefficient": 1.1,
+        "FlatDamage": 0,
+        "CanTriggerHitReact": true,
+        "HitReactStrength": 1.0,
+        "KnockbackDistance": 80,
+        "ProjectileId": null
+    },
+    {
+        "Name": "Attack.Enemy.Glacer.Melee.01",
+        "AttackId": "Attack.Enemy.Glacer.Melee",
+        "HitIndex": 1,
+        "DamageCoefficient": 0.9,
+        "FlatDamage": 0,
+        "CanTriggerHitReact": true,
+        "HitReactStrength": 0.8,
+        "KnockbackDistance": 50,
+        "ProjectileId": null
+    },
+    {
+        "Name": "Attack.Enemy.Glacer.Fireball.01",
+        "AttackId": "Attack.Enemy.Glacer.Fireball",
+        "HitIndex": 1,
+        "DamageCoefficient": 1.2,
+        "FlatDamage": 10,
+        "CanTriggerHitReact": true,
+        "HitReactStrength": 1.2,
+        "KnockbackDistance": 90,
+        "ProjectileId": "Projectile.Glacer.Fireball"
+    }
+]

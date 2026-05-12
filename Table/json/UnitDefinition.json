@@ -1,0 +1,29 @@
+[
+    {
+        "Name": "Player.Main",
+        "UnitId": "Player.Main",
+        "UnitType": "Player",
+        "StatProfileId": "Profile.Player.Garbalina",
+        "AbilityLoadoutId": " Loadout.Player.Main",
+        "DefaultLevel": 1,
+        "AssetProfileId": "Asset.Player.Main"
+    },
+    {
+        "Name": "Enemy.Guardian",
+        "UnitId": "Enemy.Guardian",
+        "UnitType": "Enemy",
+        "StatProfileId": "Profile.Enemy.Guardian",
+        "AbilityLoadoutId": " Loadout.Enemy.Guardian",
+        "DefaultLevel": 1,
+        "AssetProfileId": "Asset.Enemy.Guardian"
+    },
+    {
+        "Name": "Enemy.Glacer",
+        "UnitId": "Enemy.Glacer",
+        "UnitType": "Enemy",
+        "StatProfileId": "Profile.Enemy.Glacer",
+        "AbilityLoadoutId": " Loadout.Enemy.Glacer",
+        "DefaultLevel": 1,
+        "AssetProfileId": "Asset.Enemy.Glacer"
+    }
+]

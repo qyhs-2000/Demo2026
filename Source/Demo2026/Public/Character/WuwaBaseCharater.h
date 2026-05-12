@@ -67,7 +67,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterData")
 	TSoftObjectPtr<UDataAsset_StartUpBase> CharacterStartUpData;
 
-	
 public:	
 	
 
@@ -78,4 +77,10 @@ public:
 	virtual UPawnCombatComponent* GetPawnCombatComponent() const;
 
 	virtual UPawnUIComponent *GetPawnUIComponent() const override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	FName UnitId;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Config")
+	int32 UnitLevel = 1;
 };

@@ -25,6 +25,8 @@ namespace WuwaGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_HitPause, "Player.Ability.HitPause");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Dodge, "Player.Ability.Dodge");
 	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_SuperComputeMatrix, "Player.Ability.SuperComputeMatrix");
+	UE_DEFINE_GAMEPLAY_TAG(Player_Ability_Jump, "Player.Ability.Jump");
+
 
 
 	UE_DEFINE_GAMEPLAY_TAG(Player_Event_HitPause, "Player.Event.HitPause");
@@ -52,6 +54,7 @@ namespace WuwaGameplayTags
 	/*Shared*/
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Invincible, "Shared.Status.Invincible");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Death, "Shared.Status.Death");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Falling, "Shared.Status.Falling");
 
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_Death, "Shared.Ability.Death");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_HitReact, "Shared.Ability.HitReact");

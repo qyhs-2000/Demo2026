@@ -1,0 +1,29 @@
+[
+    {
+        "Name": "Profile.Player.Garbalina",
+        "BaseAttackPower": 30,
+        "BaseDefensePower": 15,
+        "BaseMaxHealth": 400,
+        "AttackCurveRow": "Growth.Player.Attack",
+        "DefenseCurveRow": "Growth.Player.Defense",
+        "HealthCurveRow": "Growth.Player.Health"
+    },
+    {
+        "Name": "Profile.Enemy.Guardian",
+        "BaseAttackPower": 25,
+        "BaseDefensePower": 20,
+        "BaseMaxHealth": 500,
+        "AttackCurveRow": "Growth.Guardian.Attack",
+        "DefenseCurveRow": "Growth.Guardian.Defense",
+        "HealthCurveRow": "Growth.Guardian.Health"
+    },
+    {
+        "Name": "Profile.Enemy.Glacer",
+        "BaseAttackPower": 22,
+        "BaseDefensePower": 12,
+        "BaseMaxHealth": 320,
+        "AttackCurveRow": "Growth.Glacer.Attack",
+        "DefenseCurveRow": "Growth.Glacer.Defense",
+        "HealthCurveRow": "Growth.Glacer.Health"
+    }
+]

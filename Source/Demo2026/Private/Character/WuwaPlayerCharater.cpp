@@ -75,7 +75,7 @@ void AWuwaPlayerCharater::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &ThisClass::InputLook);
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::InputMove);
-	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+	//WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Triggered, this, &ThisClass::Input_SwitchTargetTrigger);
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Completed, this, &ThisClass::Input_SwitchTargetCompleted);
@@ -154,6 +154,11 @@ void AWuwaPlayerCharater::AbilityInputPressed(FGameplayTag InputTag)
 	{
 		WuwaAbilitySystemComponent->OnAbilityInputPressed(InputTag);
 	}
+
+	if(!HasAuthority())
+	{
+		ServerAbilityInputPressed(InputTag);
+	}
 }
 
 void AWuwaPlayerCharater::AbilityInputReleased(FGameplayTag InputTag)
@@ -174,6 +179,23 @@ void AWuwaPlayerCharater::ServerAbilityInputPressed_Implementation(FGameplayTag 
 	if (WuwaAbilitySystemComponent)
 	{
 		WuwaAbilitySystemComponent->OnAbilityInputPressed(InputTag);
+	}
+}
+
+void AWuwaPlayerCharater::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
+{
+	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
+	if(!WuwaAbilitySystemComponent)
+	{
+		return;
+	}
+	if(GetCharacterMovement()->IsFalling())
+	{
+		WuwaAbilitySystemComponent->AddLooseGameplayTag(WuwaGameplayTags::Shared_Status_Falling);
+	}
+	else
+	{
+		WuwaAbilitySystemComponent->RemoveLooseGameplayTag(WuwaGameplayTags::Shared_Status_Falling);
 	}
 }
 

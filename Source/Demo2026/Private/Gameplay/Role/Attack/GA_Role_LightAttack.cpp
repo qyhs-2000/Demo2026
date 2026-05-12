@@ -10,14 +10,18 @@
 #include "Net/UnrealNetwork.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystem/WuwaAbilitySystemComponent.h"
 #include "DebugHelper.h"
 UGA_Role_LightAttack::UGA_Role_LightAttack()
 {
 	AbilityTags.AddTag(WuwaGameplayTags::Player_Ability_Attack_Light);
+	
 	//CancelAbilitiesWithTag.AddTag(WuwaGameplayTags::Player_Ability_Attack_Light);
+	ActivationBlockedTags.AddTag(WuwaGameplayTags::Shared_Status_Falling);
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateYes;
 	NetExecutionPolicy = EGameplayAbilityNetExecutionPolicy::LocalPredicted;
+
 }
 
 void UGA_Role_LightAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -34,6 +38,7 @@ void UGA_Role_LightAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		Character->OnMoveInput.AddUObject(this, &ThisClass::OnMoveInputReceived);
 	}
+
 	bCanBeInterrupted = false;
 
 	UAbilityTask_WaitGameplayEvent* WaitGameplayEvent = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, WuwaGameplayTags::Shared_Event_MeleeHit);
@@ -43,6 +48,10 @@ void UGA_Role_LightAttack::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		WaitGameplayEvent->ReadyForActivation();
 
 	}
+
+	TryContinueCombo();
+	//ServerRPCTest();
+	
 }
 
 void UGA_Role_LightAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -63,18 +72,12 @@ void UGA_Role_LightAttack::PlayComboMontage()
 
 	int32 MontageIndex = AttackComboCount % LightAttackMontages.Num();
 	UAnimMontage* MontageToPlay = LightAttackMontages[MontageIndex];
-	//debug::Print(GetRoleCharacterInfo(), FString::Printf(TEXT("%s Play Combo Index: %d"), GetRoleCharacterInfo()->GetLocalRole() < ROLE_Authority ? TEXT("Client ") : TEXT("Server "), MontageIndex));
 
 	if (AWuwaPlayerCharater* Character = Cast<AWuwaPlayerCharater>(GetAvatarActorFromActorInfo()))
 	{
 		PlayAnimMontage(MontageToPlay);
 	}
 
-}
-
-void UGA_Role_LightAttack::ResetCombo_Implementation()
-{
-	ServerResetCombo();
 }
 
 bool UGA_Role_LightAttack::CanActivateAbility(
@@ -92,7 +95,11 @@ bool UGA_Role_LightAttack::CanActivateAbility(
 
 void UGA_Role_LightAttack::HandleDamage(FGameplayEventData EventData)
 {
-
+	if(!GetRoleCharacterInfo()->HasAuthority())
+	{
+		return;
+	}
+	
 	if (const AActor* TargetConst = EventData.Target)
 	{
 		AActor* Target = const_cast<AActor*>(TargetConst);
@@ -109,12 +116,7 @@ void UGA_Role_LightAttack::HandleDamage(FGameplayEventData EventData)
 	//debug::Print(FString::Printf(TEXT("%s apply damage to %s"), *EventData.Instigator->GetActorNameOrLabel(), *EventData.Target->GetActorNameOrLabel()));
 }
 
-void UGA_Role_LightAttack::ServerResetCombo_Implementation()
-{
-	MulticastResetCombo();
-}
-
-void UGA_Role_LightAttack::MulticastResetCombo_Implementation()
+void UGA_Role_LightAttack::ResetCombo()
 {
 	CurrentPlayTask = nullptr;
 	AttackComboCount = 0;
@@ -194,18 +196,22 @@ void UGA_Role_LightAttack::ResetAttack()
 void UGA_Role_LightAttack::TryContinueCombo()
 {
 	PlayComboMontage();
-
 }
 
 void UGA_Role_LightAttack::OnInputPressed()
 {
-	if (!bComboInputAllowed)
+	if (!bComboInputAllowed || GetWuwaAbilitySystemComponentFromActorInfo()->HasMatchingGameplayTag(WuwaGameplayTags::Shared_Status_Falling))
 	{
 		//bComboQueued = true;
 		return;
 	}
 
 	TryContinueCombo();
+}
+
+void UGA_Role_LightAttack::ServerRPCTest_Implementation()
+{
+	debug::Print(TEXT("ServerRPCTest_Implementation called"));
 }
 
 

@@ -1,9 +1,12 @@
 /.git
 /.github
+/.vs
 /.vscode
 /Content
 /DerivedDataCache
 /Intermediate
 /Saved
+/Scripts
+/Table
 /Plugins/RMFixTool/Content
 /Plugins/RMFixTool/Intermediate

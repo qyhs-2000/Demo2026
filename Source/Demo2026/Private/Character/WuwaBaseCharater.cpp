@@ -57,6 +57,11 @@ void AWuwaBaseCharacter::BeginPlay()
 
 		}
 	}
+
+	if(WuwaAttributeSet)
+	{
+		WuwaAttributeSet->InitializeAttributes();
+	}
 }
 
 void AWuwaBaseCharacter::PossessedBy(AController* NewController)

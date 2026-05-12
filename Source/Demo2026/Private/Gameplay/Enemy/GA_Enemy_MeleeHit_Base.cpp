@@ -5,6 +5,8 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Subsystem/GameDataSubsystem.h"
+#include "Character/WuwaEnemyCharater.h"
 #include "DebugHelper.h"
 UGA_Enemy_MeleeHit_Base::UGA_Enemy_MeleeHit_Base()
 {
@@ -45,7 +47,19 @@ void UGA_Enemy_MeleeHit_Base::HandleAttackDamage(FGameplayEventData Payload)
 	{
 		AActor* Target = const_cast<AActor*>(TargetConst);
 		EWuwaSuccessType WasSuccessfulApplyed = EWuwaSuccessType::Failed;
-		FGameplayEffectSpecHandle EffectSpecHandle = MakeEnemyDamageEffectSpecHandle(GE_DealDamage_Class, BaseDamageScalableFloat);
+
+		if(!CachedGameDataSubsystem.IsValid())
+		{
+			CachedGameDataSubsystem = MakeWeakObjectPtr(GetWorld()->GetGameInstance()->GetSubsystem<UGameDataSubsystem>());
+		}
+		
+
+		float BaseAttackPower = CachedGameDataSubsystem->GetBaseAttackPowerByUnitID(Cast<AWuwaEnemyCharacter>(Payload.Instigator.Get())->UnitId);
+		float AttackPowerGrowth = CachedGameDataSubsystem->GetAttackPowerGrowthByLevel(Cast< APawn>(Payload.Instigator.Get()), Cast<AWuwaEnemyCharacter>(Payload.Instigator.Get())->UnitLevel);
+		AttackPowerGrowth = AttackPowerGrowth>0.f?AttackPowerGrowth:1.f;
+
+
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeEnemyDamageEffectSpecHandle(GE_DealDamage_Class, BaseAttackPower * AttackPowerGrowth);
 		ApplyEffectSpecHandleToTargetActor(Target,EffectSpecHandle , WasSuccessfulApplyed);
 
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(
