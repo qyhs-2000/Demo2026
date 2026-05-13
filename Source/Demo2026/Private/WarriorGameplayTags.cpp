@@ -56,10 +56,26 @@ namespace WuwaGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Death, "Shared.Status.Death");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Falling, "Shared.Status.Falling");
 
+	UE_DEFINE_GAMEPLAY_TAG(Shared_State_IsAttacking, "Shared.State.IsAttacking");
+
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Attacking_Light_01, "Shared.Status.Attacking.Light.01");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Attacking_Light_02, "Shared.Status.Attacking.Light.02");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Attacking_Light_03, "Shared.Status.Attacking.Light.03");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Status_Attacking_Light_04, "Shared.Status.Attacking.Light.04");
+
+
+
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_Death, "Shared.Ability.Death");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_HitReact, "Shared.Ability.HitReact");
 	UE_DEFINE_GAMEPLAY_TAG(Shared_Ability_SpawnWeapon, "Shared.Ability.SpawnWeapon");
 
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Combo_Attack_Light_01, "Shared.Combo.Attack.Light.01");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Combo_Attack_Light_02, "Shared.Combo.Attack.Light.02");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Combo_Attack_Light_03, "Shared.Combo.Attack.Light.03");
+	UE_DEFINE_GAMEPLAY_TAG(Shared_Combo_Attack_Light_04, "Shared.Combo.Attack.Light.04");
+
 	/*Set By Caller*/
 	UE_DEFINE_GAMEPLAY_TAG(Shared_SetByCaller_BaseDamage, "Shared.SetByCaller.BaseDamage");
+
+	UE_DEFINE_GAMEPLAY_TAG(Shared_ComboWindow, "Shared.ComboWindow");
 }

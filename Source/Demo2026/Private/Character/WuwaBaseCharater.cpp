@@ -9,6 +9,9 @@
 #include "AbilitySystem/WuwaAttributeSet.h"
 #include "Components/TimeDilationManagerComponent.h"
 
+#include "Gameplay/Shared/GA_Attack_Base.h"
+#include "DataAssets/Role/DataAsset_RoleAttack.h"
+
 // Sets default values
 AWuwaBaseCharacter::AWuwaBaseCharacter()
 {
@@ -38,6 +41,11 @@ void AWuwaBaseCharacter::OnRep_PlayerState()
 	{
 		UIComp->InitializeComp(WuwaAbilitySystemComponent);
 	}
+}
+
+UDataAsset_RoleAttack* AWuwaBaseCharacter::GetCombatDataAsset() const
+{
+	return CombatDataAsset.Get();
 }
 
 // Called when the game starts or when spawned
@@ -72,6 +80,21 @@ void AWuwaBaseCharacter::PossessedBy(AController* NewController)
 		WuwaAbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
 	GetPawnUIComponent()->InitializeComp(WuwaAbilitySystemComponent);
+	
+	if (!CombatDataAsset.IsNull())
+	{
+		if (UDataAsset_RoleAttack* LoadedDataAsset = CombatDataAsset.LoadSynchronous())
+		{
+			for (auto& Elem : LoadedDataAsset->AttackNodes)
+			{
+				TSubclassOf<UGA_Attack_Base> AttackAbilityClass = Elem.Value.AbilityClass;
+				if (AttackAbilityClass)
+				{
+					WuwaAbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(*AttackAbilityClass, 1));
+				}
+			}
+		}
+	}
 }
 
 void AWuwaBaseCharacter::SpawnWeapon()

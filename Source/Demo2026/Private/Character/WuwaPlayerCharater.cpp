@@ -16,6 +16,7 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/PostProcessComponent.h"
+#include "DebugHelper.h"
 
 AWuwaPlayerCharater::AWuwaPlayerCharater()
 {
@@ -75,6 +76,7 @@ void AWuwaPlayerCharater::SetupPlayerInputComponent(UInputComponent* PlayerInput
 	
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Look, ETriggerEvent::Triggered, this, &ThisClass::InputLook);
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::InputMove);
+	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Role_Attack_Light, ETriggerEvent::Started, this, &ThisClass::LightAttack);
 	//WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 
 	WuwaInputComponent->BindNativeInputAction(InputConfig, WuwaGameplayTags::InputTag_SwitchTarget, ETriggerEvent::Triggered, this, &ThisClass::Input_SwitchTargetTrigger);
@@ -128,6 +130,20 @@ void AWuwaPlayerCharater::InputMove(const FInputActionValue &InputValue)
 		AddMovementInput(ForwardDirection,MoveVector.Y);
 	}
 	OnMoveInput.Broadcast();
+}
+
+void AWuwaPlayerCharater::LightAttack(const FInputActionValue& InputValue)
+{
+	debug::Print(TEXT("Light Attack"));
+	if (!WuwaAbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(WuwaGameplayTags::InputTag_Role_Attack_Light)))
+	{
+		debug::Print(TEXT("Failed to activate ability"));
+		
+		if (bCanPreInput)
+		{
+			PreInputTag = WuwaGameplayTags::InputTag_Role_Attack_Light;
+		}
+	}
 }
 
 void AWuwaPlayerCharater::Input_SwitchTargetTrigger(const FInputActionValue& InputValue)

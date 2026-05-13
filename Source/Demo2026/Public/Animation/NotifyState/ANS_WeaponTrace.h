@@ -33,7 +33,8 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	EWeaponType WeaponType = EWeaponType::Weapon_None;
-	AWuwaWeaponBase* Weapon;
+
+	AWuwaWeaponBase* GetWeaponFromMeshComp(USkeletalMeshComponent* MeshComp) const;
 private:
 	TArray<AActor*> HitActors;
 	FVector LastTimeSocketStartLocation;

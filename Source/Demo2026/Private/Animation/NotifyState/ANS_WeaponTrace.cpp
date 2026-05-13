@@ -8,13 +8,7 @@
 void UANS_WeaponTrace::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
-	AWuwaBaseCharacter* Character = Cast<AWuwaBaseCharacter>(MeshComp->GetOwner());
-	if (!Character)
-	{
-		return;
-	}
-	UPawnCombatComponent* CombatComponent = Character->GetPawnCombatComponent();
-	Weapon = CombatComponent->GetWeaponByWeaponType(WeaponType);
+	AWuwaWeaponBase* Weapon = GetWeaponFromMeshComp(MeshComp);
 	if (Weapon)
 	{
 		LastTimeSocketStartLocation = Weapon->GetSocketLocation(TraceStartSocketName);
@@ -25,7 +19,7 @@ void UANS_WeaponTrace::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequen
 void UANS_WeaponTrace::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
-	
+	AWuwaWeaponBase* Weapon = GetWeaponFromMeshComp(MeshComp);
 	if (Weapon == nullptr)
 	{
 		return;
@@ -62,4 +56,16 @@ void UANS_WeaponTrace::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequence
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 	HitActors.Empty();
+}
+
+AWuwaWeaponBase* UANS_WeaponTrace::GetWeaponFromMeshComp(USkeletalMeshComponent* MeshComp) const
+{
+	AWuwaBaseCharacter* Character = Cast<AWuwaBaseCharacter>(MeshComp->GetOwner());
+	if (!Character)
+	{
+		return nullptr;
+	}
+	UPawnCombatComponent* CombatComponent = Character->GetPawnCombatComponent();
+	AWuwaWeaponBase* Weapon = CombatComponent->GetWeaponByWeaponType(WeaponType);
+	return Weapon;
 }

@@ -40,4 +40,5 @@ inline void UWuwaEnhancedInputComponent::BindAbilityInputAction(const UDataAsset
 		BindAction(InputConfig.InputAction, ETriggerEvent::Started, context_object, InputPressedCallback,InputConfig.InputTag);
 		BindAction(InputConfig.InputAction, ETriggerEvent::Completed, context_object, InputReleasedCallback,InputConfig.InputTag);
 	}
+
 }

@@ -19,6 +19,8 @@ class UDataAsset_RoleStartUp;
 class URoleCombatComponent;
 class URoleUIComponent;
 class UPostProcessComponent;
+class UDataAsset_RoleAttack;
+
 
 DECLARE_MULTICAST_DELEGATE(FOnMoveInput);
 
@@ -41,6 +43,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Components")
 	UPostProcessComponent *MatrixPostProcess;
+	
+	bool bCanPreInput = false;
+	FGameplayTag PreInputTag;
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
@@ -50,6 +55,7 @@ protected:
 
 	void InputLook(const FInputActionValue& InputValue);
 	void InputMove(const FInputActionValue& InputValue);
+	void LightAttack(const FInputActionValue& InputValue);
 	void Input_SwitchTargetTrigger(const FInputActionValue& InputValue);
 	void Input_SwitchTargetCompleted(const FInputActionValue& InputValue);
 	FVector2D SwitchDirection = FVector2D::Zero();

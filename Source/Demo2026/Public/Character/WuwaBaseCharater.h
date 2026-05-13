@@ -7,6 +7,7 @@
 #include "Data/EnumTypes.h"
 #include "Interfaces/PawnUIInterface.h"
 #include "AbilitySystemComponent.h"
+
 #include "WuwaBaseCharater.generated.h"
 
 class UWuwaAbilitySystemComponent;
@@ -15,6 +16,7 @@ class UPawnCombatComponent;
 class UWuwaAttributeSet;
 class UDataAsset_StartUpBase;
 class UTimeDilationManagerComponent;
+class UDataAsset_RoleAttack;
 
 USTRUCT(BlueprintType)
 struct FWeaponWithAttachedSocketName
@@ -41,6 +43,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "TimeDilation")
 	UTimeDilationManagerComponent* TimeDilationManager;
 
+	UDataAsset_RoleAttack* GetCombatDataAsset()const;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,8 +67,11 @@ protected:
 	TArray<AWuwaWeaponBase*> LoadedWeapons;
 	virtual void SpawnWeapon();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CharacterData")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DataAsset")
 	TSoftObjectPtr<UDataAsset_StartUpBase> CharacterStartUpData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DataAsset")
+	TSoftObjectPtr<UDataAsset_RoleAttack> CombatDataAsset = nullptr;
 
 public:	
 	
